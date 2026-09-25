@@ -9,8 +9,14 @@ export const site = {
 };
 
 export const about = {
-  greeting: "Hey, I'm Wardah!",
-  body: `I'm a 20-year-old majoring in Film Studies and minoring in Data Science at Lawrence University — currently a Junior. Growing up in a society where children were mostly forced to choose traditional fields like medicine or engineering, I found my passion in photography and video making. It became my way of capturing emotions and stories that I struggled to express in words. What started as taking simple shots of nature turned into a deep love for documenting real, unfiltered moments.`,
+  greeting: "Hey, I’m Wardah!",
+  heading: "Behind the Camera",
+  paragraphs: [
+    "I’m a filmmaker and content creator drawn to stories that feel human, honest, and worth remembering. Whether I’m behind a camera, piecing together an edit, taking photographs, or creating content for a brand, I love finding the small details that make someone stop, feel something, and pay attention.",
+    "My experience has taken me from film and documentary production to marketing and social media, giving me the chance to tell stories in a lot of different ways. I’ve worked on everything from interviews and documentary projects to short-form videos, promotional content, and visual campaigns. I like being involved in the whole creative process, from figuring out the story to shaping how it finally looks and feels.",
+    "I’m currently studying Film Studies at Lawrence University, but most of my learning happens by making things, trying new ideas, and figuring things out along the way. I’m always looking for the next story to tell and a more interesting way to tell it.",
+  ],
+  closer: "always looking for the next story →",
   polaroidCaption: "on set / somewhere between takes",
   polaroidSrc: "/placeholders/about-polaroid.svg",
 };
@@ -24,23 +30,38 @@ export const navItems = [
   { id: "contact", label: "Contact" },
 ] as const;
 
+export type PhotoOrientation = "portrait" | "landscape";
+
 export type PhotoFrame = {
   id: string;
-  title: string;
   src: string;
-  rotation: number;
+  alt: string;
+  orientation: PhotoOrientation;
+  caption: string;
+  frameNumber: string;
 };
 
 export const photos: PhotoFrame[] = [
-  { id: "p1", title: "Golden hour portrait", src: "/placeholders/photo-01.svg", rotation: -2 },
-  { id: "p2", title: "Street lights", src: "/placeholders/photo-02.svg", rotation: 1.5 },
-  { id: "p3", title: "Mirror study", src: "/placeholders/photo-03.svg", rotation: -1 },
-  { id: "p4", title: "Field notes", src: "/placeholders/photo-04.svg", rotation: 2.5 },
-  { id: "p5", title: "Soft focus", src: "/placeholders/photo-05.svg", rotation: -1.5 },
-  { id: "p6", title: "Night walk", src: "/placeholders/photo-06.svg", rotation: 1 },
-  { id: "p7", title: "Hands & light", src: "/placeholders/photo-07.svg", rotation: -2.5 },
-  { id: "p8", title: "Window seat", src: "/placeholders/photo-08.svg", rotation: 0.5 },
+  { id: "p01", src: "/placeholders/photo-01.svg", alt: "Portrait placeholder 01", orientation: "portrait", caption: "Golden hour portrait", frameNumber: "01" },
+  { id: "p02", src: "/placeholders/photo-02.svg", alt: "Portrait placeholder 02", orientation: "portrait", caption: "Street lights", frameNumber: "02" },
+  { id: "p03", src: "/placeholders/photo-ls-01.svg", alt: "Landscape placeholder 03", orientation: "landscape", caption: "Open road", frameNumber: "03" },
+  { id: "p04", src: "/placeholders/photo-04.svg", alt: "Portrait placeholder 04", orientation: "portrait", caption: "Field notes", frameNumber: "04" },
+  { id: "p05", src: "/placeholders/photo-05.svg", alt: "Portrait placeholder 05", orientation: "portrait", caption: "Soft focus", frameNumber: "05" },
+  { id: "p06", src: "/placeholders/photo-06.svg", alt: "Portrait placeholder 06", orientation: "portrait", caption: "Night walk", frameNumber: "06" },
+  { id: "p07", src: "/placeholders/photo-ls-02.svg", alt: "Landscape placeholder 07", orientation: "landscape", caption: "Harbor line", frameNumber: "07" },
+  { id: "p08", src: "/placeholders/photo-08.svg", alt: "Portrait placeholder 08", orientation: "portrait", caption: "Window seat", frameNumber: "08" },
+  { id: "p09", src: "/placeholders/photo-01.svg", alt: "Portrait placeholder 09", orientation: "portrait", caption: "Quiet doorway", frameNumber: "09" },
+  { id: "p10", src: "/placeholders/photo-02.svg", alt: "Portrait placeholder 10", orientation: "portrait", caption: "After rehearsal", frameNumber: "10" },
+  { id: "p11", src: "/placeholders/photo-03.svg", alt: "Portrait placeholder 11", orientation: "portrait", caption: "Mirror study", frameNumber: "11" },
+  { id: "p12", src: "/placeholders/photo-ls-03.svg", alt: "Landscape placeholder 12", orientation: "landscape", caption: "Last light", frameNumber: "12" },
+  { id: "p13", src: "/placeholders/photo-05.svg", alt: "Portrait placeholder 13", orientation: "portrait", caption: "Hands & light", frameNumber: "13" },
+  { id: "p14", src: "/placeholders/photo-06.svg", alt: "Portrait placeholder 14", orientation: "portrait", caption: "Backstage", frameNumber: "14" },
+  { id: "p15", src: "/placeholders/photo-07.svg", alt: "Portrait placeholder 15", orientation: "portrait", caption: "Still waiting", frameNumber: "15" },
+  { id: "p16", src: "/placeholders/photo-08.svg", alt: "Portrait placeholder 16", orientation: "portrait", caption: "Call sheet", frameNumber: "16" },
 ];
+
+export const stillsTopRoll = photos.slice(0, 8);
+export const stillsBottomRoll = photos.slice(8, 16);
 
 export type Ticket = {
   id: string;

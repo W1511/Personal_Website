@@ -26,7 +26,7 @@ export default function PortfolioStage() {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [wiping, setWiping] = useState(false);
-  const [direction, setDirection] = useState(1);
+  const [, setDirection] = useState(1);
 
   const goTo = useCallback(
     (nextIndex: number, dir?: number) => {
@@ -108,11 +108,6 @@ export default function PortfolioStage() {
                   "linear-gradient(105deg, transparent 15%, rgba(255,122,77,0.45) 45%, rgba(255,248,239,0.55) 50%, rgba(79,212,203,0.4) 55%, transparent 85%)",
               }}
             />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <p className="display text-3xl tracking-[0.3em] text-cream uppercase sm:text-5xl">
-                Scene {String(Math.min(index + (direction > 0 ? 2 : 1), stages.length)).padStart(2, "0")}
-              </p>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

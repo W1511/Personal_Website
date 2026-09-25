@@ -25,12 +25,10 @@ function Sticker({
 }) {
   return (
     <motion.div
-      className={`absolute z-20 cursor-grab active:cursor-grabbing ${className ?? ""}`}
-      drag={!reduce}
-      dragConstraints={{ left: -48, right: 48, top: -36, bottom: 36 }}
-      dragElastic={0.15}
-      whileHover={reduce ? undefined : { scale: 1.07, zIndex: 30 }}
-      whileTap={reduce ? undefined : { scale: 0.98 }}
+      className={`absolute z-20 ${className ?? ""}`}
+      drag={false}
+      whileHover={reduce ? undefined : { scale: 1.05, rotate: 2, y: -4, zIndex: 30 }}
+      transition={{ type: "spring", stiffness: 320, damping: 22 }}
     >
       <div className={reduce ? undefined : floatClass} style={{ rotate: `${rotate}deg` }}>
         {children}
@@ -283,7 +281,7 @@ export default function ClapboardHero({ onClapComplete }: Props) {
           </button>
 
           <p className="hand mt-4 text-xl text-cream/55">
-            {clapping ? "rolling…" : "drag stickers · clap the slate to enter"}
+            {clapping ? "rolling…" : "clap the slate to enter"}
           </p>
         </div>
       </div>
