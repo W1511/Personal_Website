@@ -4,7 +4,7 @@ import LightLeak from "@/components/LightLeak";
 import { InstaxMiniCartoon, PremiereTimelineCartoon, SonyAlphaCartoon } from "@/components/HeroGear";
 import { site } from "@/lib/content";
 import { motion, useReducedMotion } from "framer-motion";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 type Props = {
   onClapComplete: () => void;
@@ -60,11 +60,18 @@ function FilmReel({ spinning }: { spinning: boolean }) {
 }
 
 export default function ClapboardHero({ onClapComplete }: Props) {
-  const reduce = useReducedMotion();
+  const reduceMotion = useReducedMotion();
+  const [hydrated, setHydrated] = useState(false);
   const [clapping, setClapping] = useState(false);
   const [burst, setBurst] = useState(false);
   const [reelSpin, setReelSpin] = useState(false);
   const [popped, setPopped] = useState<string | null>(null);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  const reduce = hydrated ? Boolean(reduceMotion) : false;
 
   const clap = () => {
     if (clapping) return;
@@ -187,7 +194,7 @@ export default function ClapboardHero({ onClapComplete }: Props) {
           <Sticker className="top-[68%] right-[0%] sm:right-[2%]" rotate={4} reduce={reduce} floatClass="hero-float-a">
             <div className="rounded-sm border-2 border-dashed border-teal-soft/50 bg-teal/25 px-3 py-2 text-cream backdrop-blur-sm">
               <p className="font-mono text-[9px] tracking-widest uppercase opacity-70">Currently</p>
-              <p className="hand text-xl leading-none">Lawrence U · Junior</p>
+              <p className="hand text-xl leading-none">Lawrence U · Senior</p>
             </div>
           </Sticker>
 

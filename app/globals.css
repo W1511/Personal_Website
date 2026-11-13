@@ -222,6 +222,110 @@ body {
   }
 }
 
+@keyframes projector-flicker {
+  0%,
+  100% {
+    opacity: 0.04;
+  }
+  46% {
+    opacity: 0.03;
+  }
+  52% {
+    opacity: 0.07;
+  }
+  54% {
+    opacity: 0.02;
+  }
+  91% {
+    opacity: 0.045;
+  }
+}
+
+.projector-flicker {
+  animation: projector-flicker 7.5s ease-in-out infinite;
+}
+
+@keyframes cinema-play-breathe {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.14);
+  }
+}
+
+@keyframes cinema-play-ring {
+  0% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+.cinema-play-halo {
+  animation: cinema-play-breathe 5.4s ease-in-out infinite;
+}
+
+.cinema-play-burst {
+  opacity: 0;
+}
+
+.group\/play:hover .cinema-play-burst,
+.group\/play:focus-visible .cinema-play-burst {
+  animation: cinema-play-ring 0.85s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinema-play-halo,
+  .group\/play:hover .cinema-play-burst,
+  .group\/play:focus-visible .cinema-play-burst {
+    animation: none !important;
+  }
+}
+
+@keyframes rec-led-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.28;
+  }
+}
+
+.rec-led-live {
+  animation: rec-led-pulse 1.15s ease-in-out infinite;
+}
+
+@keyframes rec-meter {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.rec-meter-bar {
+  display: block;
+  transform-origin: bottom;
+  animation: rec-meter 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rec-led-live,
+  .rec-meter-bar {
+    animation: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-name-pop,
   .hero-fade-up,
@@ -233,5 +337,137 @@ body {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .projector-flicker {
+    animation: none !important;
+    opacity: 0.04 !important;
+  }
+}
+
+/* —— About journal doodles —— */
+@keyframes about-cat-blink {
+  0%,
+  88%,
+  100% {
+    transform: scaleY(1);
+  }
+  91%,
+  93% {
+    transform: scaleY(0.08);
+  }
+}
+
+@keyframes about-cat-tail {
+  0%,
+  100% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes about-cat-ear {
+  0%,
+  72%,
+  100% {
+    transform: rotate(0deg);
+  }
+  78% {
+    transform: rotate(-14deg);
+  }
+  84% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes about-steam {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+@keyframes about-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.about-cat-blink {
+  transform-origin: 50% 55%;
+  animation: about-cat-blink 4.8s ease-in-out infinite;
+}
+
+.about-cat-tail {
+  transform-origin: 22px 78px;
+  animation: about-cat-tail 3.6s ease-in-out infinite;
+}
+
+.about-cat-ear-l {
+  transform-origin: 80px 48px;
+  animation: about-cat-ear 5.4s ease-in-out infinite;
+}
+
+.about-cat-ear-r {
+  transform-origin: 118px 46px;
+  animation: about-cat-ear 5.4s 0.4s ease-in-out infinite;
+}
+
+.about-steam {
+  animation: about-steam 2.8s ease-in-out infinite;
+}
+
+.about-float {
+  animation: about-float 4.2s ease-in-out infinite;
+}
+
+.about-float-late {
+  animation: about-float 5s 0.6s ease-in-out infinite;
+}
+
+.about-camera:hover .about-flash,
+.about-camera:focus-visible .about-flash {
+  animation: about-flash 0.7s ease-out;
+}
+
+@keyframes about-flash {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.about-flash {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-cat-blink,
+  .about-cat-tail,
+  .about-cat-ear-l,
+  .about-cat-ear-r,
+  .about-steam,
+  .about-float,
+  .about-float-late,
+  .about-camera:hover .about-flash,
+  .about-camera:focus-visible .about-flash {
+    animation: none !important;
   }
 }

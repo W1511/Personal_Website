@@ -1,10 +1,10 @@
 export const site = {
   name: "Wardah Basil",
   tagline: "Capturing what words can’t",
-  email: "hello@wardahbasil.com",
+  email: "wardahbasil2004@gmail.com",
   socials: {
-    instagram: "https://instagram.com/",
-    linkedin: "https://linkedin.com/",
+    instagram: "https://www.instagram.com/wardaheck._/",
+    linkedin: "https://www.linkedin.com/in/wardah-basil040404/",
   },
 };
 
@@ -17,15 +17,18 @@ export const about = {
     "I’m currently studying Film Studies at Lawrence University, but most of my learning happens by making things, trying new ideas, and figuring things out along the way. I’m always looking for the next story to tell and a more interesting way to tell it.",
   ],
   closer: "always looking for the next story →",
-  polaroidCaption: "on set / somewhere between takes",
-  polaroidSrc: "/placeholders/about-polaroid.svg",
+  polaroidSrc: "/about/DSC00860.jpg",
+  annotations: {
+    cat: "cat person, always",
+    caffeine: "powered by caffeine",
+    camera: "usually behind a camera",
+  },
 };
 
 export const navItems = [
   { id: "about", label: "About" },
   { id: "photography", label: "Stills" },
   { id: "shorts", label: "Shorts" },
-  { id: "films", label: "Films" },
   { id: "projects", label: "Projects" },
   { id: "contact", label: "Contact" },
 ] as const;
@@ -42,22 +45,22 @@ export type PhotoFrame = {
 };
 
 export const photos: PhotoFrame[] = [
-  { id: "p01", src: "/placeholders/photo-01.svg", alt: "Portrait placeholder 01", orientation: "portrait", caption: "Golden hour portrait", frameNumber: "01" },
-  { id: "p02", src: "/placeholders/photo-02.svg", alt: "Portrait placeholder 02", orientation: "portrait", caption: "Street lights", frameNumber: "02" },
-  { id: "p03", src: "/placeholders/photo-ls-01.svg", alt: "Landscape placeholder 03", orientation: "landscape", caption: "Open road", frameNumber: "03" },
-  { id: "p04", src: "/placeholders/photo-04.svg", alt: "Portrait placeholder 04", orientation: "portrait", caption: "Field notes", frameNumber: "04" },
-  { id: "p05", src: "/placeholders/photo-05.svg", alt: "Portrait placeholder 05", orientation: "portrait", caption: "Soft focus", frameNumber: "05" },
-  { id: "p06", src: "/placeholders/photo-06.svg", alt: "Portrait placeholder 06", orientation: "portrait", caption: "Night walk", frameNumber: "06" },
-  { id: "p07", src: "/placeholders/photo-ls-02.svg", alt: "Landscape placeholder 07", orientation: "landscape", caption: "Harbor line", frameNumber: "07" },
-  { id: "p08", src: "/placeholders/photo-08.svg", alt: "Portrait placeholder 08", orientation: "portrait", caption: "Window seat", frameNumber: "08" },
-  { id: "p09", src: "/placeholders/photo-01.svg", alt: "Portrait placeholder 09", orientation: "portrait", caption: "Quiet doorway", frameNumber: "09" },
-  { id: "p10", src: "/placeholders/photo-02.svg", alt: "Portrait placeholder 10", orientation: "portrait", caption: "After rehearsal", frameNumber: "10" },
-  { id: "p11", src: "/placeholders/photo-03.svg", alt: "Portrait placeholder 11", orientation: "portrait", caption: "Mirror study", frameNumber: "11" },
-  { id: "p12", src: "/placeholders/photo-ls-03.svg", alt: "Landscape placeholder 12", orientation: "landscape", caption: "Last light", frameNumber: "12" },
-  { id: "p13", src: "/placeholders/photo-05.svg", alt: "Portrait placeholder 13", orientation: "portrait", caption: "Hands & light", frameNumber: "13" },
-  { id: "p14", src: "/placeholders/photo-06.svg", alt: "Portrait placeholder 14", orientation: "portrait", caption: "Backstage", frameNumber: "14" },
-  { id: "p15", src: "/placeholders/photo-07.svg", alt: "Portrait placeholder 15", orientation: "portrait", caption: "Still waiting", frameNumber: "15" },
-  { id: "p16", src: "/placeholders/photo-08.svg", alt: "Portrait placeholder 16", orientation: "portrait", caption: "Call sheet", frameNumber: "16" },
+  { id: "p01", src: "/stills/01.jpg", alt: "Portrait in an underpass", orientation: "portrait", caption: "Golden hour portrait", frameNumber: "01" },
+  { id: "p02", src: "/stills/02.jpg", alt: "Portrait against an orange wall", orientation: "portrait", caption: "Street lights", frameNumber: "02" },
+  { id: "p03", src: "/stills/03.jpg", alt: "Couple walking and holding hands", orientation: "landscape", caption: "Open road", frameNumber: "03" },
+  { id: "p04", src: "/stills/04.jpg", alt: "Josef’s sign at dusk", orientation: "portrait", caption: "Field notes", frameNumber: "04" },
+  { id: "p05", src: "/stills/05.jpg", alt: "Black and white portrait", orientation: "portrait", caption: "Soft focus", frameNumber: "05" },
+  { id: "p06", src: "/stills/06.jpg", alt: "Couple running on the street", orientation: "portrait", caption: "Night walk", frameNumber: "06" },
+  { id: "p07", src: "/stills/07.jpg", alt: "Guitarist performing on stage", orientation: "landscape", caption: "Harbor line", frameNumber: "07" },
+  { id: "p08", src: "/stills/08.jpg", alt: "Couple leaning together by a wall", orientation: "portrait", caption: "Window seat", frameNumber: "08" },
+  { id: "p09", src: "/stills/09.jpg", alt: "Michelangelo’s Coffee House window", orientation: "portrait", caption: "Quiet doorway", frameNumber: "09" },
+  { id: "p10", src: "/stills/10.jpg", alt: "Photographer seen from behind", orientation: "portrait", caption: "After rehearsal", frameNumber: "10" },
+  { id: "p11", src: "/stills/11.jpg", alt: "Photographer holding a camera and flash", orientation: "portrait", caption: "Mirror study", frameNumber: "11" },
+  { id: "p12", src: "/stills/12.jpg", alt: "Keyboardist performing on stage", orientation: "landscape", caption: "Last light", frameNumber: "12" },
+  { id: "p13", src: "/stills/13.jpg", alt: "Graduation cap and 2026 tassel", orientation: "portrait", caption: "Hands & light", frameNumber: "13" },
+  { id: "p14", src: "/stills/14.jpg", alt: "Graduate on a bridge", orientation: "portrait", caption: "Backstage", frameNumber: "14" },
+  { id: "p15", src: "/stills/15.jpg", alt: "Adjusting a graduation cap", orientation: "portrait", caption: "Still waiting", frameNumber: "15" },
+  { id: "p16", src: "/stills/16.jpg", alt: "Portrait with camera and flash", orientation: "portrait", caption: "Call sheet", frameNumber: "16" },
 ];
 
 export const stillsTopRoll = photos.slice(0, 8);
@@ -75,97 +78,91 @@ export type Ticket = {
   posterSrc?: string;
 };
 
-export const shorts: Ticket[] = [
+export type ShortFilm = {
+  id: string;
+  title: string;
+  year: string;
+  runtime: string;
+  role: string;
+  synopsis: string;
+  videoUrl: string;
+};
+
+export const shorts: ShortFilm[] = [
   {
     id: "s1",
-    title: "Winds of Fate",
-    role: "Director",
-    year: "2024",
-    synopsis: "A short about chance encounters and the weather that brings people together.",
-    stubColor: "tungsten",
-    posterSrc: "/placeholders/photo-01.svg",
+    title: "CTRL + R",
+    year: "2026",
+    runtime: "3 MIN 6 SEC",
+    role: "Experimental Documentary",
+    synopsis:
+      "Made with found news footage, CTRL + R captures the uncertainty of being an international student in the U.S., where every refresh can bring another policy change, another piece of bad news, and another question about the future.",
+    videoUrl: "https://youtu.be/nke9L9HfccQ",
   },
   {
     id: "s2",
-    title: "Half Developed",
-    role: "DP / Editor",
+    title: "Home",
     year: "2025",
-    synopsis: "Darkroom metaphors for growing up between cultures and expectations.",
-    stubColor: "teal",
-    posterSrc: "/placeholders/photo-03.svg",
+    runtime: "2 MIN 24 SEC",
+    role: "Short Film",
+    synopsis:
+      "Home is a short film about the emotional weight of being far away from the people you love. Made with found footage from personal phone memories, it explores homesickness, distance, and the small moments that make you realize how much you miss home.",
+    videoUrl: "https://youtu.be/LY3AG5BLK_g",
   },
   {
     id: "s3",
-    title: "Take Two",
-    role: "Writer / Director",
+    title: "Do You Miss It?",
     year: "2025",
-    synopsis: "A comedy of errors on a student film set that somehow finds the truth.",
-    stubColor: "cream",
-    posterSrc: "/placeholders/photo-05.svg",
-  },
-];
-
-export const films: Ticket[] = [
-  {
-    id: "f1",
-    title: "Untitled Feature Reel",
-    role: "Director",
-    year: "2025",
-    synopsis: "Placeholder reel — swap this stub for your feature or thesis film.",
-    stubColor: "tungsten",
-    posterSrc: "/placeholders/photo-02.svg",
+    runtime: "39 SEC",
+    role: "Stop-Motion Animation",
+    synopsis:
+      "This stop-motion animation uses colored sand to create images that have to be destroyed in order for the next one to exist. Frame by frame, the sand shifts from one moment into another, playing with the idea that once something changes, you can remember what was there, but you can’t fully get it back.",
+    videoUrl: "https://youtu.be/zBtDppx_bf0",
   },
   {
-    id: "f2",
-    title: "Documentary Cut",
-    role: "Producer",
+    id: "s4",
+    title: "The One",
     year: "2024",
-    synopsis: "Observational portraits of people who make things with their hands.",
-    stubColor: "teal",
-    posterSrc: "/placeholders/photo-07.svg",
+    runtime: "1 MIN 18 SEC",
+    role: "Short Film",
+    synopsis:
+      "The One is a short film told entirely without dialogue. It follows a young woman who feels disconnected from her own life and explores the comfort of having someone to turn to when everything becomes overwhelming. At its core, the film is about presence, connection, and finding support during difficult moments.",
+    videoUrl: "https://youtu.be/MlrwPyKV_BI",
   },
 ];
 
-export type ProjectBucket = {
+export type SelectedWork = {
   id: string;
-  tool: string;
-  note: string;
-  items: string[];
-  rotate: number;
-  tint: string;
+  src: string;
+  title: string;
+  span?: "default" | "wide";
 };
 
-export const projects: ProjectBucket[] = [
+export const selectedWorks: SelectedWork[] = [
   {
-    id: "ps",
-    tool: "Photoshop",
-    note: "composites & poster stills",
-    items: ["Festival poster A", "Color grade moodboard", "Title card study"],
-    rotate: -3,
-    tint: "#ffe0a8",
+    id: "magazine-cover",
+    src: "/projects/coverpagefinal.jpg",
+    title: "Magazine Cover",
   },
   {
-    id: "ai",
-    tool: "Illustrator",
-    note: "marks, frames, type",
-    items: ["Logo lockups", "Storyboard frames", "Sticker sheet"],
-    rotate: 2,
-    tint: "#b8f3ee",
+    id: "magazine-spread",
+    src: "/projects/Double_spreadfinalfinal.jpg",
+    title: "Magazine Editorial Spread",
+    span: "wide",
   },
   {
-    id: "cv",
-    tool: "Canva",
-    note: "fast social cuts",
-    items: ["Event flyer", "Reel covers", "Call sheet template"],
-    rotate: -1.5,
-    tint: "#ffc9b5",
+    id: "room-illustration",
+    src: "/projects/Illustration.jpg",
+    title: "Room Illustration",
   },
   {
-    id: "wp",
-    tool: "WordPress",
-    note: "sites & showcases",
-    items: ["Client landing", "Gallery layout", "Press kit page"],
-    rotate: 2.5,
-    tint: "#f0e2cf",
+    id: "packaging-illustration",
+    src: "/projects/Malborojpeg.jpeg",
+    title: "Packaging Illustration",
+  },
+  {
+    id: "pizza-stand",
+    src: "/projects/PizzaIllustration.jpg",
+    title: "Pizza Stand Illustration",
   },
 ];

@@ -1,15 +1,28 @@
 "use client";
 
 import { stillsBottomRoll, stillsTopRoll, type PhotoFrame } from "@/lib/content";
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useTransform, type MotionValue } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
 export default function ContactSheet({ onNext: _onNext }: { onNext: () => void }) {
   const reduce = useReducedMotion();
-  const scrollerRef = useRef<HTMLElement>(null);
+  const hostRef = useRef<HTMLElement>(null);
+  const [scroller, setScroller] = useState<HTMLElement | null>(null);
   const [active, setActive] = useState<PhotoFrame | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
+
+  useLayoutEffect(() => {
+    let el: HTMLElement | null = hostRef.current?.parentElement ?? null;
+    while (el) {
+      const overflowY = getComputedStyle(el).overflowY;
+      if (overflowY === "auto" || overflowY === "scroll") {
+        setScroller(el);
+        return;
+      }
+      el = el.parentElement;
+    }
+  }, []);
 
   useEffect(() => {
     if (!active) return;
@@ -21,12 +34,13 @@ export default function ContactSheet({ onNext: _onNext }: { onNext: () => void }
   }, [active]);
 
   return (
-    <section ref={scrollerRef} className="h-[100svh] overflow-x-hidden overflow-y-auto bg-charcoal">
-      {reduce ? (
+    <section ref={hostRef} className="w-full max-w-[100vw] overflow-x-clip overscroll-x-none bg-charcoal">
+      {reduce || !scroller ? (
         <StaticFilmTable hovered={hovered} setHovered={setHovered} onOpen={setActive} />
       ) : (
         <ScrollFilmTable
-          scrollerRef={scrollerRef}
+          scroller={scroller}
+          lightboxOpen={Boolean(active)}
           hovered={hovered}
           setHovered={setHovered}
           onOpen={setActive}
@@ -39,10 +53,10 @@ export default function ContactSheet({ onNext: _onNext }: { onNext: () => void }
 
 function Intro() {
   return (
-    <div className="relative z-20 px-4 pt-24 sm:px-8">
-      <p className="hand text-2xl text-tungsten-hot">contact sheet · roll 01</p>
-      <h2 className="display text-4xl text-cream sm:text-5xl">Photography</h2>
-      <p className="mt-2 max-w-md text-sm text-cream/55 sm:text-base">
+    <div className="relative z-20 shrink-0 px-4 pt-[6.5rem] pb-3 sm:px-6 sm:pt-28 sm:pb-4">
+      <p className="hand text-xl leading-none text-tungsten-hot sm:text-[1.45rem]">contact sheet · roll 01</p>
+      <h2 className="display text-[2.1rem] leading-none text-cream sm:text-[2.65rem]">Photography</h2>
+      <p className="mt-0.5 max-w-md text-xs text-cream/55 sm:text-sm">
         a collection of moments, one frame at a time
       </p>
     </div>
@@ -50,120 +64,222 @@ function Intro() {
 }
 
 function ScrollFilmTable({
-  scrollerRef,
+  scroller,
+  lightboxOpen,
   hovered,
   setHovered,
   onOpen,
 }: {
-  scrollerRef: RefObject<HTMLElement | null>;
+  scroller: HTMLElement;
+  lightboxOpen: boolean;
   hovered: string | null;
   setHovered: (id: string | null) => void;
   onOpen: (photo: PhotoFrame) => void;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const [travel, setTravel] = useState({
-    topFrom: 80,
-    topTo: -1800,
-    botFrom: -1800,
-    botTo: 80,
+  const topGateRef = useRef<HTMLDivElement>(null);
+  const botGateRef = useRef<HTMLDivElement>(null);
+  const topMoveRef = useRef<HTMLDivElement>(null);
+  const botMoveRef = useRef<HTMLDivElement>(null);
+  const travelRef = useRef({
+        topFrom: 0,
+        topTo: -2200,
+        botFrom: -2200,
+        botTo: 0,
   });
+  const [spin, setSpin] = useState(0);
 
-  const { scrollYProgress } = useScroll({
-    container: scrollerRef,
-    target: trackRef,
-    offset: ["start start", "end end"],
-  });
+  const progress = useMotionValue(0);
+  const reelRotate = useTransform(progress, [0, 1], [0, 720]);
 
-  const topX = useTransform(scrollYProgress, [0, 1], [travel.topFrom, travel.topTo]);
-  const botX = useTransform(scrollYProgress, [0, 1], [travel.botFrom, travel.botTo]);
+  const applyFilm = useCallback((p: number) => {
+    const t = travelRef.current;
+    const clamped = Math.max(0, Math.min(1, p));
+    progress.set(clamped);
+    if (topMoveRef.current) {
+      topMoveRef.current.style.transform = `translate3d(${t.topFrom + clamped * (t.topTo - t.topFrom)}px,0,0)`;
+    }
+    if (botMoveRef.current) {
+      botMoveRef.current.style.transform = `translate3d(${t.botFrom + clamped * (t.botTo - t.botFrom)}px,0,0)`;
+    }
+  }, [progress]);
+
+  const syncFromScroll = useCallback(() => {
+    if (scroller.scrollLeft !== 0) scroller.scrollLeft = 0;
+    const max = scroller.scrollHeight - scroller.clientHeight;
+    applyFilm(max <= 0 ? 0 : scroller.scrollTop / max);
+  }, [applyFilm, scroller]);
+
+  useEffect(() => {
+    syncFromScroll();
+    scroller.addEventListener("scroll", syncFromScroll, { passive: true });
+    document.addEventListener("scroll", syncFromScroll, { capture: true, passive: true });
+    return () => {
+      scroller.removeEventListener("scroll", syncFromScroll);
+      document.removeEventListener("scroll", syncFromScroll, { capture: true });
+    };
+  }, [scroller, syncFromScroll]);
 
   useLayoutEffect(() => {
     const measure = () => {
       const stage = stageRef.current;
       const top = topRef.current;
       const bottom = bottomRef.current;
-      if (!stage || !top || !bottom) return;
-      const vw = stage.clientWidth;
-      const topW = top.scrollWidth;
-      const botW = bottom.scrollWidth;
-      setTravel({
-        topFrom: Math.round(vw * 0.06),
-        topTo: Math.round(-(Math.max(topW - vw * 0.55, vw * 1.4))),
-        botFrom: Math.round(-(Math.max(botW - vw * 0.55, vw * 1.4))),
-        botTo: Math.round(vw * 0.1),
-      });
+      const gate = topGateRef.current;
+      if (!stage || !gate || !top || !bottom) return;
+      const vw = gate.clientWidth;
+      if (vw < 80) return;
+      const topTravel = Math.max(top.scrollWidth - vw, 1);
+      const botTravel = Math.max(bottom.scrollWidth - vw, 1);
+      travelRef.current = {
+        topFrom: 0,
+        topTo: Math.round(-topTravel),
+        botFrom: Math.round(-botTravel),
+        botTo: 0,
+      };
+      syncFromScroll();
     };
     measure();
     const ro = new ResizeObserver(measure);
     if (stageRef.current) ro.observe(stageRef.current);
+    if (topGateRef.current) ro.observe(topGateRef.current);
+    if (botGateRef.current) ro.observe(botGateRef.current);
     if (topRef.current) ro.observe(topRef.current);
     if (bottomRef.current) ro.observe(bottomRef.current);
     return () => ro.disconnect();
-  }, []);
+  }, [syncFromScroll]);
+
+  useEffect(() => {
+    const sticky = stickyRef.current;
+    if (!sticky) return;
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaX !== 0 || e.deltaY !== 0) e.preventDefault();
+      if (e.deltaY === 0) return;
+      scroller.scrollTop += e.deltaY;
+    };
+    sticky.addEventListener("wheel", onWheel, { passive: false });
+    return () => sticky.removeEventListener("wheel", onWheel);
+  }, [scroller]);
+
+  const wind = useCallback(
+    (direction: 1 | -1) => {
+      const max = scroller.scrollHeight - scroller.clientHeight;
+      const step = Math.max(max / 8, 160);
+      const next = Math.max(0, Math.min(max, scroller.scrollTop + direction * step));
+      scroller.scrollTo({ top: next, behavior: "smooth" });
+      setSpin((n) => n + direction * 90);
+    },
+    [scroller],
+  );
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (lightboxOpen) return;
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      wind(e.key === "ArrowRight" ? 1 : -1);
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [lightboxOpen, wind]);
 
   return (
-    <div ref={trackRef} className="relative h-[280vh]">
-      <div className="sticky top-0 flex h-[100svh] flex-col overflow-x-hidden">
+    <div ref={trackRef} className="relative h-[300vh] w-full max-w-full min-w-0 overflow-x-clip">
+      <div ref={stickyRef} className="sticky top-0 flex h-[100svh] w-full min-w-0 flex-col overflow-x-clip overflow-y-hidden overscroll-x-none [touch-action:pan-y]">
         <Intro />
-        <div ref={stageRef} className="relative mt-3 min-h-0 flex-1 overflow-hidden">
-          <div
-            className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-charcoal to-transparent sm:w-24"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-charcoal to-transparent sm:w-24"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute -left-8 top-[18%] h-36 w-36 rounded-full bg-tungsten/12 blur-3xl"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute -right-8 bottom-[18%] h-36 w-36 rounded-full bg-teal/10 blur-3xl"
-            aria-hidden
-          />
-
-          <div className="flex h-full flex-col justify-center gap-[3vh] py-2">
-            <motion.div
-              data-film="top"
-              style={{ x: topX }}
-              className="origin-left will-change-transform"
-            >
-              <div className="-rotate-[1.4deg] scale-[1.02]">
-                <FilmStrip
-                  stripRef={topRef}
-                  items={stillsTopRoll}
-                  label="ROLL 01 · A"
-                  hovered={hovered}
-                  setHovered={setHovered}
-                  onOpen={onOpen}
-                />
+        <div ref={stageRef} className="relative flex min-h-0 min-w-0 w-full flex-1 flex-col overflow-x-clip overflow-y-hidden">
+          <div className="flex min-h-0 min-w-0 w-full flex-1 flex-col justify-start gap-2 py-0 sm:gap-2.5">
+            <FilmViewport gateRef={topGateRef} className="min-h-0 flex-1">
+              <div ref={topMoveRef} data-film="top" className="h-full w-max max-w-none will-change-transform">
+                <div className="h-full -rotate-[1.2deg]">
+                  <FilmStrip
+                    stripRef={topRef}
+                    items={stillsTopRoll}
+                    label="ROLL 01 · A"
+                    hovered={hovered}
+                    setHovered={setHovered}
+                    onOpen={onOpen}
+                  />
+                </div>
               </div>
-            </motion.div>
+            </FilmViewport>
 
-            <motion.div
-              data-film="bottom"
-              style={{ x: botX }}
-              className="origin-left will-change-transform"
-            >
-              <div className="ml-[-12%] rotate-[1.35deg] scale-[0.98]">
-                <FilmStrip
-                  stripRef={bottomRef}
-                  items={stillsBottomRoll}
-                  label="ROLL 01 · B"
-                  hovered={hovered}
-                  setHovered={setHovered}
-                  onOpen={onOpen}
-                />
+            <DevelopSticker reelRotate={reelRotate} spin={spin} onWind={() => wind(1)} />
+
+            <FilmViewport gateRef={botGateRef} className="min-h-0 flex-1">
+              <div ref={botMoveRef} data-film="bottom" className="h-full w-max max-w-none will-change-transform">
+                <div className="h-full rotate-[1.15deg]">
+                  <FilmStrip
+                    stripRef={bottomRef}
+                    items={stillsBottomRoll}
+                    label="ROLL 01 · B"
+                    hovered={hovered}
+                    setHovered={setHovered}
+                    onOpen={onOpen}
+                  />
+                </div>
               </div>
-            </motion.div>
+            </FilmViewport>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function DevelopSticker({
+  reelRotate,
+  spin,
+  onWind,
+}: {
+  reelRotate: MotionValue<number>;
+  spin: number;
+  onWind: () => void;
+}) {
+  return (
+    <div className="relative z-20 flex justify-center py-1">
+      <motion.button
+        type="button"
+        onClick={onWind}
+        aria-label="Scroll to develop"
+        whileHover={{ scale: 1.04, rotate: -3 }}
+        whileTap={{ scale: 0.985, rotate: -1 }}
+        transition={{ type: "spring", stiffness: 340, damping: 24 }}
+        className="flex -rotate-[1.8deg] cursor-pointer items-center gap-2.5 bg-transparent p-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-tungsten"
+      >
+        <motion.span style={{ rotate: reelRotate }} className="inline-flex">
+          <motion.span animate={{ rotate: spin }} transition={{ type: "spring", stiffness: 180, damping: 16 }}>
+            <FilmReelIcon />
+          </motion.span>
+        </motion.span>
+        <span className="hand text-xl leading-none text-teal-soft sm:text-[1.35rem]">scroll to develop ↓</span>
+      </motion.button>
+    </div>
+  );
+}
+
+function FilmReelIcon() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden>
+      <circle cx="17" cy="17" r="15" fill="#1a1512" stroke="#c4783a" strokeWidth="1.5" />
+      <circle cx="17" cy="17" r="4" fill="#e85a32" />
+      {[0, 60, 120, 180, 240, 300].map((deg) => (
+        <circle
+          key={deg}
+          cx={17 + Math.cos((deg * Math.PI) / 180) * 8.5}
+          cy={17 + Math.sin((deg * Math.PI) / 180) * 8.5}
+          r="2.1"
+          fill="#0e0c0a"
+          stroke="#f3ead8"
+          strokeWidth="0.6"
+        />
+      ))}
+    </svg>
   );
 }
 
@@ -177,28 +293,52 @@ function StaticFilmTable({
   onOpen: (photo: PhotoFrame) => void;
 }) {
   return (
-    <div className="pb-16">
+    <div className="min-h-[100svh] pb-16">
       <Intro />
-      <div className="mt-8 flex flex-col gap-8 overflow-hidden py-4">
-        <div className="-rotate-1">
-          <FilmStrip
-            items={stillsTopRoll}
-            label="ROLL 01 · A"
-            hovered={hovered}
-            setHovered={setHovered}
-            onOpen={onOpen}
-          />
-        </div>
-        <div className="ml-[-8%] rotate-1">
-          <FilmStrip
-            items={stillsBottomRoll}
-            label="ROLL 01 · B"
-            hovered={hovered}
-            setHovered={setHovered}
-            onOpen={onOpen}
-          />
-        </div>
+      <div className="mt-3 flex min-h-[78vh] min-w-0 w-full flex-col justify-center gap-2 overflow-x-clip overflow-y-hidden py-1">
+        <FilmViewport>
+          <div className="-rotate-1">
+            <FilmStrip
+              items={stillsTopRoll}
+              label="ROLL 01 · A"
+              hovered={hovered}
+              setHovered={setHovered}
+              onOpen={onOpen}
+            />
+          </div>
+        </FilmViewport>
+        <p className="hand text-center text-xl text-teal-soft/80">scroll to develop ↓</p>
+        <FilmViewport>
+          <div className="rotate-1">
+            <FilmStrip
+              items={stillsBottomRoll}
+              label="ROLL 01 · B"
+              hovered={hovered}
+              setHovered={setHovered}
+              onOpen={onOpen}
+            />
+          </div>
+        </FilmViewport>
       </div>
+    </div>
+  );
+}
+
+function FilmViewport({
+  children,
+  gateRef,
+  className = "",
+}: {
+  children: ReactNode;
+  gateRef?: RefObject<HTMLDivElement | null>;
+  className?: string;
+}) {
+  return (
+    <div
+      ref={gateRef}
+      className={`relative mx-auto flex h-full min-h-0 w-[min(93vw,calc(100%-5rem))] min-w-0 max-w-full items-stretch overflow-x-clip overflow-y-hidden [contain:inline-size] ${className}`}
+    >
+      {children}
     </div>
   );
 }
@@ -221,14 +361,16 @@ function FilmStrip({
   return (
     <div
       ref={stripRef}
-      className="inline-flex flex-col"
+      className="inline-grid h-full max-h-full w-max max-w-none grid-rows-[24px_minmax(0,1fr)_24px] overflow-hidden"
       style={{
+        height: "100%",
+        minHeight: "12.5rem",
         background: "linear-gradient(180deg, #1c1814 0%, #100e0c 50%, #1a1612 100%)",
         boxShadow: "inset 0 0 0 1px rgba(250,246,238,0.06), 0 28px 50px rgba(0,0,0,0.5)",
       }}
     >
       <SprocketBar />
-      <div className="flex items-end gap-4 px-5 py-2">
+      <div className="flex min-h-0 w-max items-stretch gap-4 px-4 py-1.5 sm:gap-5 sm:px-5">
         <FilmLeader label={label} />
         {items.map((photo) => (
           <FilmFrame
@@ -248,7 +390,7 @@ function FilmStrip({
 
 function FilmLeader({ label }: { label: string }) {
   return (
-    <div className="flex h-[min(22vw,200px)] min-h-[150px] w-14 items-center justify-center sm:w-16" aria-hidden>
+    <div className="flex h-full w-12 shrink-0 items-center justify-center sm:w-14" aria-hidden>
       <p
         className="font-mono text-[9px] tracking-[0.28em] text-tungsten/80 uppercase"
         style={{ writingMode: "vertical-rl" }}
@@ -281,31 +423,22 @@ function FilmFrame({
       onFocus={() => onHover(photo.id)}
       onBlur={() => onHover(null)}
       aria-label={`Open ${photo.caption}`}
-      className="group relative shrink-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-tungsten"
+      className="group relative h-full shrink-0 cursor-zoom-in text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-tungsten"
     >
       <div
-        className={`overflow-hidden bg-black p-[6px] transition duration-300 ${
-          dimmed ? "opacity-45" : "opacity-100"
-        } group-hover:scale-[1.03] group-hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)]`}
+        className={`flex h-full overflow-hidden bg-black p-[5px] transition duration-300 sm:p-[6px] ${
+          dimmed ? "opacity-40" : "opacity-100"
+        } group-hover:scale-[1.025] group-hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)]`}
       >
-        <div
-          className="relative h-[min(22vw,200px)] min-h-[150px] w-auto overflow-hidden"
-          style={{ aspectRatio: landscape ? "3 / 2" : "2 / 3" }}
-        >
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            fill
-            className="object-cover transition duration-300 group-hover:brightness-110"
-            sizes={landscape ? "420px" : "280px"}
-          />
-        </div>
-      </div>
-      <div className="mt-1.5 flex items-baseline justify-between gap-2 px-0.5">
-        <span className="font-mono text-[9px] tracking-[0.18em] text-cream/40">{photo.frameNumber}A</span>
-        <span className="hand text-sm text-teal-soft opacity-0 transition duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-          {photo.caption}
-        </span>
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          width={landscape ? 1500 : 1000}
+          height={landscape ? 1000 : 1500}
+          priority
+          className="h-full w-auto max-w-none select-none transition duration-300 group-hover:brightness-[1.12]"
+          sizes="(min-width: 1280px) 30vw, 42vw"
+        />
       </div>
     </button>
   );
@@ -313,17 +446,19 @@ function FilmFrame({
 
 function SprocketBar() {
   return (
-    <div className="flex h-7 w-full items-center gap-[13px] overflow-hidden px-3" aria-hidden>
-      {Array.from({ length: 96 }).map((_, i) => (
-        <span
-          key={i}
-          className="h-[11px] w-[8px] shrink-0 rounded-[1.5px]"
-          style={{
-            background: "#0b0907",
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.14), 0 0 0 1px #2c261f",
-          }}
-        />
-      ))}
+    <div className="relative h-6 w-full overflow-hidden" aria-hidden>
+      <div className="absolute inset-0 flex items-center gap-[13px] px-3">
+        {Array.from({ length: 200 }).map((_, i) => (
+          <span
+            key={i}
+            className="h-[11px] w-[8px] shrink-0 rounded-[1.5px]"
+            style={{
+              background: "#0b0907",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.14), 0 0 0 1px #2c261f",
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }

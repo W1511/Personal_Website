@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="640" viewBox="0 0 920 640">
+  <rect width="100%" height="100%" fill="#f0cfc0"/>
+  <rect x="28" y="28" width="864" height="584" fill="none" stroke="#d08972" stroke-width="2" stroke-dasharray="7 8" opacity="0.55"/>
+  <rect x="166" y="179" width="589" height="77" fill="#d08972" opacity="0.28"/>
+  <circle cx="294" cy="333" r="51" fill="#d08972" opacity="0.22"/>
+  <text x="50%" y="46%" text-anchor="middle" font-family="Georgia, serif" font-size="35" fill="#1c1410">INDESIGN 01</text>
+  <text x="50%" y="54%" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#4a3a30">Add artwork here · spread</text>
+</svg>

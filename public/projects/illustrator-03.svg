@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="620" viewBox="0 0 860 620">
+  <rect width="100%" height="100%" fill="#c5ddd8"/>
+  <rect x="28" y="28" width="804" height="564" fill="none" stroke="#8ab8b2" stroke-width="2" stroke-dasharray="7 8" opacity="0.55"/>
+  <rect x="155" y="174" width="550" height="74" fill="#8ab8b2" opacity="0.28"/>
+  <circle cx="275" cy="322" r="50" fill="#8ab8b2" opacity="0.22"/>
+  <text x="50%" y="46%" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#1c1410">ILLUSTRATOR 03</text>
+  <text x="50%" y="54%" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#4a3a30">Add artwork here · landscape</text>
+</svg>

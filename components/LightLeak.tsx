@@ -4,8 +4,14 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function LightLeak({ burst = false }: { burst?: boolean }) {
-  const reduce = useReducedMotion();
+  const reduceMotion = useReducedMotion();
+  const [hydrated, setHydrated] = useState(false);
   const [flare, setFlare] = useState({ x: 50, y: 40 });
+  const reduce = hydrated ? Boolean(reduceMotion) : false;
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (reduce) return;

@@ -15,7 +15,6 @@ export const stages = [
   { id: "about", label: "About" },
   { id: "photography", label: "Stills" },
   { id: "shorts", label: "Shorts" },
-  { id: "films", label: "Films" },
   { id: "projects", label: "Projects" },
   { id: "contact", label: "Contact" },
 ] as const;
@@ -88,7 +87,7 @@ export default function PortfolioStage() {
 
   return (
     <div className="relative h-[100svh] overflow-hidden bg-charcoal">
-      <FilmStripNav activeId={stage.id} onNavigate={goToId} />
+      {stage.id !== "shorts" && <FilmStripNav activeId={stage.id} onNavigate={goToId} />}
 
       {/* Film wipe / light-leak transition */}
       <AnimatePresence>
@@ -119,8 +118,12 @@ export default function PortfolioStage() {
         {stage.id === "top" && <ClapboardHero onClapComplete={goNext} />}
         {stage.id === "about" && <AboutPolaroid onNext={goNext} />}
         {stage.id === "photography" && <ContactSheet onNext={goNext} />}
-        {stage.id === "shorts" && <TapedFrame part="shorts" onNext={goNext} />}
-        {stage.id === "films" && <TapedFrame part="films" onNext={goNext} />}
+        {stage.id === "shorts" && (
+          <>
+            <FilmStripNav activeId={stage.id} onNavigate={goToId} flow />
+            <TapedFrame />
+          </>
+        )}
         {stage.id === "projects" && <ProjectStickies onNext={goNext} />}
         {stage.id === "contact" && <CallSheetContact onNext={() => goTo(0, -1)} />}
       </div>
