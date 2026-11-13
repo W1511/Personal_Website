@@ -4,10 +4,28 @@ import { site } from "@/lib/content";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 
+const FORMSPREE_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID || "moedjwnd";
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+type FieldErrors = {
+  name?: string;
+  email?: string;
+  message?: string;
+};
+
 export default function CallSheetContact(_props: { onNext: () => void }) {
   const reduce = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [timecode, setTimecode] = useState("00:00:00:00");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [formError, setFormError] = useState("");
 
   useEffect(() => {
     if (!open || reduce) {
@@ -147,19 +165,74 @@ export default function CallSheetContact(_props: { onNext: () => void }) {
                       transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
                       className="mt-5 space-y-4"
                       aria-expanded
-                      onSubmit={(e) => {
+                      noValidate
+                      onSubmit={async (e) => {
                         e.preventDefault();
-                        const data = new FormData(e.currentTarget);
-                        const name = String(data.get("name") || "");
-                        const email = String(data.get("email") || "");
-                        const message = String(data.get("message") || "");
-                        const subject = encodeURIComponent(`Portfolio note from ${name || "someone"}`);
-                        const body = encodeURIComponent(
-                          [`Name: ${name || "—"}`, `Email: ${email || "—"}`, "", message].join("\n"),
-                        );
-                        window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`;
+                        if (status === "sending") return;
+
+                        const nextErrors: FieldErrors = {};
+                        const trimmedName = name.trim();
+                        const trimmedEmail = email.trim();
+                        const trimmedMessage = message.trim();
+
+                        if (!trimmedName) nextErrors.name = "Please enter your name.";
+                        if (!trimmedEmail) nextErrors.email = "Please enter your email.";
+                        else if (!isValidEmail(trimmedEmail)) nextErrors.email = "Please enter a valid email address.";
+                        if (!trimmedMessage) nextErrors.message = "Please enter a message.";
+
+                        setFieldErrors(nextErrors);
+                        if (Object.keys(nextErrors).length > 0) {
+                          setStatus("idle");
+                          setFormError("");
+                          return;
+                        }
+
+                        if (!FORMSPREE_ID) {
+                          setStatus("error");
+                          setFormError("This form isn't connected yet. Please email me directly for now.");
+                          return;
+                        }
+
+                        setStatus("sending");
+                        setFormError("");
+
+                        try {
+                          const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+                            method: "POST",
+                            headers: {
+                              Accept: "application/json",
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              name: trimmedName,
+                              email: trimmedEmail,
+                              message: trimmedMessage,
+                              _replyto: trimmedEmail,
+                              _subject: `Portfolio note from ${trimmedName}`,
+                            }),
+                          });
+
+                          if (!response.ok) {
+                            throw new Error("Formspree rejected the submission");
+                          }
+
+                          setStatus("success");
+                          setName("");
+                          setEmail("");
+                          setMessage("");
+                          setFieldErrors({});
+                        } catch {
+                          setStatus("error");
+                          setFormError("Something went wrong. Please try again, or email me directly.");
+                        }
                       }}
                     >
+                      {status === "success" ? (
+                        <p className="py-8 text-center font-mono text-sm leading-relaxed tracking-[0.04em] text-cream">
+                          Message sent! I&apos;ll get back to you soon.
+                        </p>
+                      ) : (
+                        <>
                       <label className="block">
                         <span className="font-mono text-[10px] tracking-[0.24em] text-cream/40 uppercase">
                           Your name
@@ -168,9 +241,18 @@ export default function CallSheetContact(_props: { onNext: () => void }) {
                           name="name"
                           autoComplete="name"
                           autoFocus
+                          required
+                          value={name}
+                          onChange={(event) => setName(event.target.value)}
+                          aria-invalid={Boolean(fieldErrors.name)}
                           className="mt-1.5 w-full border-0 border-b border-cream/20 bg-transparent px-0 py-2 text-sm text-cream outline-none transition placeholder:text-cream/25 focus:border-tungsten"
                           placeholder="Your name"
                         />
+                        {fieldErrors.name ? (
+                          <span className="mt-1.5 block font-mono text-[10px] tracking-[0.08em] text-tungsten-hot">
+                            {fieldErrors.name}
+                          </span>
+                        ) : null}
                       </label>
                       <label className="block">
                         <span className="font-mono text-[10px] tracking-[0.24em] text-cream/40 uppercase">
@@ -180,9 +262,18 @@ export default function CallSheetContact(_props: { onNext: () => void }) {
                           name="email"
                           type="email"
                           autoComplete="email"
+                          required
+                          value={email}
+                          onChange={(event) => setEmail(event.target.value)}
+                          aria-invalid={Boolean(fieldErrors.email)}
                           className="mt-1.5 w-full border-0 border-b border-cream/20 bg-transparent px-0 py-2 text-sm text-cream outline-none transition placeholder:text-cream/25 focus:border-tungsten"
                           placeholder="Your email"
                         />
+                        {fieldErrors.email ? (
+                          <span className="mt-1.5 block font-mono text-[10px] tracking-[0.08em] text-tungsten-hot">
+                            {fieldErrors.email}
+                          </span>
+                        ) : null}
                       </label>
                       <label className="block">
                         <span className="font-mono text-[10px] tracking-[0.24em] text-cream/40 uppercase">
@@ -192,16 +283,32 @@ export default function CallSheetContact(_props: { onNext: () => void }) {
                           name="message"
                           rows={4}
                           required
+                          value={message}
+                          onChange={(event) => setMessage(event.target.value)}
+                          aria-invalid={Boolean(fieldErrors.message)}
                           className="mt-1.5 w-full resize-y border-0 border-b border-cream/20 bg-transparent px-0 py-2 text-sm leading-relaxed text-cream outline-none transition placeholder:text-cream/25 focus:border-tungsten"
                           placeholder="Write your message here..."
                         />
+                        {fieldErrors.message ? (
+                          <span className="mt-1.5 block font-mono text-[10px] tracking-[0.08em] text-tungsten-hot">
+                            {fieldErrors.message}
+                          </span>
+                        ) : null}
                       </label>
+                      {formError ? (
+                        <p className="font-mono text-[10px] tracking-[0.08em] text-tungsten-hot" role="alert">
+                          {formError}
+                        </p>
+                      ) : null}
                       <button
                         type="submit"
-                        className="pt-2 font-mono text-[11px] tracking-[0.28em] text-tungsten uppercase transition hover:text-tungsten-hot focus:outline-none focus-visible:ring-2 focus-visible:ring-tungsten"
+                        disabled={status === "sending"}
+                        className="pt-2 font-mono text-[11px] tracking-[0.28em] text-tungsten uppercase transition hover:text-tungsten-hot focus:outline-none focus-visible:ring-2 focus-visible:ring-tungsten disabled:cursor-wait disabled:opacity-50"
                       >
-                        Send message →
+                        {status === "sending" ? "Sending…" : "Send message →"}
                       </button>
+                        </>
+                      )}
                     </motion.form>
                   )}
                 </AnimatePresence>
