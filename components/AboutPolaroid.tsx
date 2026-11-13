@@ -105,6 +105,7 @@ export default function AboutPolaroid({ onNext }: { onNext: () => void }) {
                     sizes="(min-width: 1024px) 26vw, 58vw"
                     quality={95}
                     priority
+                    unoptimized
                   />
                 </div>
               </motion.button>
